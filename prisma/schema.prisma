@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model PointOfInterest {
+  id          Int                     @id @default(autoincrement())
+  name        String
+  openingHours PointOfInterestOpenning?
+  address     PointOfInterestAddress? 
+  addressId   Int?
+  pump       PointOfInterestPump[]
+  status      String
+
+  @@map("point_of_interest")
+}
+
+model PointOfInterestAddress {
+  id                Int              @id @default(autoincrement())
+  pointOfInterest   PointOfInterest?  @relation(fields: [pointOfInterestId], references: [id], onDelete: Cascade)
+  pointOfInterestId Int? @unique
+
+  country     String
+  zipCode     String
+  city        String
+  street      String
+  houseNumber String
+
+  @@map("point_of_interest_address")
+}
+
+model PointOfInterestPump {
+  id                  String         @id @default(cuid())
+  name                String
+  products            PumpProduct[] 
+  pointOfInterestId   Int
+  pointOfInterest     PointOfInterest @relation(fields: [pointOfInterestId], references: [id])
+
+  @@map("point_of_interest_pump")
+}
+
+model PointOfInterestOpenning {
+  id         Int @id @default(autoincrement())
+  openingDays String[]
+  openingHours DateTime
+  closingHours DateTime
+  pointOfInterestId Int @unique
+  pointOfInterest PointOfInterest @relation(fields: [pointOfInterestId], references: [id])
+  @@map("point_of_interest_openning_hours_case")
+}
+
+model PumpProduct {
+  id          Int     @id @default(autoincrement())
+  name        String
+  pumpId      String
+  pump        PointOfInterestPump? @relation(fields: [pumpId], references: [id])
+  prices      Price[]
+
+  @@map("pump_product")
+}
+
+model Price {
+  id                  Int     @id @default(autoincrement())
+  price               Float
+  currency           String
+  pumpProductId      Int
+  pumpProduct        PumpProduct @relation(fields: [pumpProductId], references: [id]) // Foreign key to PumpProduct
+
+  @@map("product_price")
+}
