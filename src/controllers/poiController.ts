@@ -28,7 +28,7 @@ export class PoiController {
 
   async findById(req: Request, res: Response) {
     try {
-      const station = await this.service.findById(req.params.id);
+      const station = await this.service.findById(Number(req.params.id));
       if (!station) {
         return res.status(404).json({ error: 'poi not found' });
       }
@@ -37,10 +37,9 @@ export class PoiController {
       res.status(500).json({ error: 'Failed to fetch poi' });
     }
   }
-
   async update(req: Request, res: Response) {
     try {
-      const station = await this.service.update(req.params.id, req.body);
+      const station = await this.service.update(Number(req.params.id), req.body);
       res.json(station);
     } catch (error) {
       res.status(500).json({ error: 'Failed to update poi' });
@@ -49,7 +48,7 @@ export class PoiController {
 
   async delete(req: Request, res: Response) {
     try {
-      await this.service.delete(req.params.id);
+      await this.service.delete(Number(req.params.id));
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete poi' });
