@@ -93,10 +93,10 @@ export class PoiService {
           update: data.address
         } : undefined,
         openingHours: data.openingHours ? {
-          deleteMany: {},
+          delete: {},
           create: data.openingHours
         } : undefined,
-        pumps: data.pumps ? {
+        pump: data.pumps ? {
           deleteMany: {},
           create: data.pumps.map(pump => ({
             name: pump.name,
@@ -126,8 +126,7 @@ export class PoiService {
       }
     });
   }
-
-  async delete(id: string) {
+  async delete(id: number) {
     await this.prisma.pointOfInterest.delete({
       where: { id }
     });
